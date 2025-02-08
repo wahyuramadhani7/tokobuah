@@ -9,7 +9,7 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <form action="{{ route('admin.products.store') }}" method="POST">
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         {{-- Nama Produk --}}
@@ -38,6 +38,25 @@
             <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" 
                 value="{{ old('stock') }}" required min="0" step="1">
             @error('stock')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Deskripsi --}}
+        <div class="mb-3">
+            <label class="form-label">Deskripsi</label>
+            <textarea name="description" class="form-control @error('description') is-invalid @enderror" 
+                rows="4" required>{{ old('description') }}</textarea>
+            @error('description')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Gambar Produk --}}
+        <div class="mb-3">
+            <label class="form-label">Gambar Produk</label>
+            <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" required>
+            @error('image')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>

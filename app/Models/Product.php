@@ -9,5 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'price', 'stock']; // ✅ Benar
+    protected $fillable = [
+        'name', 'price', 'stock', 'description', 'image',
+    ];
 }

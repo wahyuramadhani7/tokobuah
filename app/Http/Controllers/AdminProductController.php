@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class AdminProductController extends Controller
 {
@@ -20,20 +21,26 @@ class AdminProductController extends Controller
 
     public function store(Request $request)
     {
-        // Debugging untuk cek request
-        // dd($request->all());
-
         $request->validate([
-            'name'  => 'required|string|max:255|unique:products,name',
-            'price' => 'required|integer|min:0', // Pastikan integer agar tidak desimal
-            'stock' => 'required|integer|min:0',
+            'name'        => 'required|string|max:255|unique:products,name',
+            'price'       => 'required|integer|min:0',
+            'stock'       => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Maksimal 2MB
         ]);
 
         try {
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('products', 'public');
+            }
+
             Product::create([
-                'name'  => $request->name,
-                'price' => (int) $request->price, // Pastikan harga disimpan sebagai integer
-                'stock' => $request->stock,
+                'name'        => $request->name,
+                'price'       => (int) $request->price,
+                'stock'       => $request->stock,
+                'description' => $request->description,
+                'image'       => $imagePath,
             ]);
 
             return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan');
@@ -53,16 +60,28 @@ class AdminProductController extends Controller
         $product = Product::findOrFail($id);
 
         $request->validate([
-            'name'  => 'required|string|max:255|unique:products,name,' . $id,
-            'price' => 'required|integer|min:0', // Pastikan integer
-            'stock' => 'required|integer|min:0',
+            'name'        => 'required|string|max:255|unique:products,name,' . $id,
+            'price'       => 'required|integer|min:0',
+            'stock'       => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         try {
+            $imagePath = $product->image; // Gunakan gambar lama jika tidak diunggah yang baru
+            if ($request->hasFile('image')) {
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image); // Hapus gambar lama
+                }
+                $imagePath = $request->file('image')->store('products', 'public');
+            }
+
             $product->update([
-                'name'  => $request->name,
-                'price' => (int) $request->price, // Pastikan harga disimpan sebagai integer
-                'stock' => $request->stock,
+                'name'        => $request->name,
+                'price'       => (int) $request->price,
+                'stock'       => $request->stock,
+                'description' => $request->description,
+                'image'       => $imagePath,
             ]);
 
             return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui');
@@ -74,7 +93,14 @@ class AdminProductController extends Controller
     public function destroy($id)
     {
         try {
-            Product::findOrFail($id)->delete();
+            $product = Product::findOrFail($id);
+
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image); // Hapus gambar dari storage
+            }
+
+            $product->delete();
+
             return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus produk: ' . $e->getMessage());
