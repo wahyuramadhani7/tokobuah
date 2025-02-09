@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\AdminMiddleware; // Pastikan untuk mengimport AdminMiddleware
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Mendaftarkan custom middleware admin
+        Route::middlewareGroup('admin', [
+            AdminMiddleware::class, // Daftarkan middleware admin
+        ]);
     }
 }

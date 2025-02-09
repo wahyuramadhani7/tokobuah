@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminProductController;
-use App\Http\Controllers\UserController; // Tambahkan UserController
+use App\Http\Controllers\UserController; // Menambahkan UserController
+use App\Http\Controllers\AuthController; // Menambahkan AuthController
 
 // Halaman utama
 Route::get('/', function () {
@@ -14,8 +15,17 @@ Route::get('/', function () {
 Route::get('/products', [UserController::class, 'index'])->name('user.products');
 Route::get('/products/{id}', [UserController::class, 'show'])->name('user.products.show');
 
-// Route untuk Admin Product CRUD
-Route::prefix('admin/products')->name('admin.products.')->group(function () {
+// Route untuk login dan register
+Route::get('login', [AuthController::class, 'showLoginForm'])->name('login.form');
+Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::get('register', [AuthController::class, 'showRegisterForm'])->name('register.form');
+Route::post('register', [AuthController::class, 'register'])->name('register');
+
+// Route logout
+Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+// Route untuk Admin Product CRUD - hanya untuk admin yang terautentikasi
+Route::prefix('admin/products')->name('admin.products.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminProductController::class, 'index'])->name('index');
     Route::get('/create', [AdminProductController::class, 'create'])->name('create');
     Route::post('/', [AdminProductController::class, 'store'])->name('store');
@@ -23,3 +33,4 @@ Route::prefix('admin/products')->name('admin.products.')->group(function () {
     Route::put('/{product}', [AdminProductController::class, 'update'])->name('update');
     Route::delete('/{product}', [AdminProductController::class, 'destroy'])->name('destroy');
 });
+
