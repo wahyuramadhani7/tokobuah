@@ -13,13 +13,14 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // Memeriksa apakah user terautentikasi dan admin
+        // Memeriksa apakah user terautentikasi dan memiliki status is_admin
         if (Auth::check() && Auth::user()->is_admin) {
+            // Jika admin, lanjutkan ke request berikutnya
             return $next($request);
         }
 
         // Jika bukan admin, arahkan ke halaman login dengan pesan kesalahan
         return redirect()->route('login.form')
-                         ->withErrors(['error' => 'Akses ditolak. Anda bukan admin.']);
+                         ->with('error', 'Akses ditolak. Anda bukan admin.');
     }
 }
