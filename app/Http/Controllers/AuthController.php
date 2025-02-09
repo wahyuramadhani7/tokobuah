@@ -34,7 +34,12 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // Redirect ke halaman produk setelah login berhasil
+            // Jika user adalah admin, alihkan ke halaman admin produk
+            if (Auth::user()->is_admin) {
+                return redirect()->route('admin.products.index')->with('success', 'Login berhasil sebagai Admin');
+            }
+
+            // Redirect ke halaman produk setelah login berhasil (untuk user biasa)
             return redirect()->route('user.products')->with('success', 'Login berhasil');
         } else {
             // Kembali dengan pesan error jika login gagal

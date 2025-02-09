@@ -4,6 +4,14 @@
 <div class="container">
     <h1 class="mb-4 text-center">Daftar Produk</h1>
 
+    <!-- Tombol Logout -->
+    <div class="d-flex justify-content-end mb-4">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    </div>
+
     @if ($products->isEmpty())
         <div class="alert alert-info text-center">Belum ada produk tersedia.</div>
     @else
