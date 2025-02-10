@@ -3,12 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminProductController;
-use App\Http\Controllers\UserController; // Menambahkan UserController
-use App\Http\Controllers\AuthController; // Menambahkan AuthController
+use App\Http\Controllers\UserController; 
+use App\Http\Controllers\AuthController; 
 
-// Halaman utama
+// Langsung redirect ke halaman login
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login.form');
 });
 
 // Route untuk produk umum (user)
@@ -33,4 +33,9 @@ Route::prefix('admin/products')->name('admin.products.')->middleware(['auth', 'a
     Route::put('/{product}', [AdminProductController::class, 'update'])->name('update');
     Route::delete('/{product}', [AdminProductController::class, 'destroy'])->name('destroy');
 });
+use App\Http\Controllers\PasswordResetController;
 
+Route::get('forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset-password', [PasswordResetController::class, 'reset'])->name('password.update');

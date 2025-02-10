@@ -1,0 +1,25 @@
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.auth-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #3498db, #8e44ad);
+    color: white;
+}
+
+.admin-layout {
+    background: linear-gradient(135deg, #1a2a6c, #2a3d66);
+}
+
+.user-layout {
+    background: linear-gradient(135deg, #2193b0, #3498db);
+}
+
+.dashboard-container {
+    padding: 2rem;
+}
